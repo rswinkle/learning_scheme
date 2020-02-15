@@ -5,9 +5,9 @@ What it says on the tin.
 
 This will just be a place to store my work while working through the following books:
 
-Little Schemer (already done though may come back to it)
-Seasoned Schemer
-SICP (pdf in repo)
+* The Little Schemer (already done though may come back to it)
+* The Seasoned Schemer
+* SICP (pdf in repo)
 
 Any other good books or exercises I hear about.
 
