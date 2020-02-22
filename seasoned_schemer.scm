@@ -14,6 +14,8 @@
   (lambda (n)
     (- n 1)))
 
+; Chapter 11 
+
 (define is-first?
   (lambda (a lat)
     (cond
@@ -95,6 +97,33 @@
 (define scramble
   (lambda (tup)
     (scramble-b tup '())))
+
+
+
+; Chapter 12
+(define multirember
+  (lambda (a lat)
+    (letrec
+      ((mr (lambda (lat)
+             (cond
+               ((null? lat) '())
+               ((eq? a (car lat))
+                (mr (cdr lat)))
+               (else
+                 (cons (car lat)
+                       (mr (cdr lat))))))))
+      (mr lat))))
+
+
+(define multirember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond
+        ((null? lat) '())
+        ((test? (car lat) a)
+         ((multirember-f test?) a (cdr lat)))
+        (else (cons (car lat)
+                    ((multirember-f test?) a (cdr lat))))))))
 
 
 
