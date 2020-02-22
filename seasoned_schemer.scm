@@ -53,11 +53,20 @@
       (else (or (eq? (car lat) preceding)
                 (two-in-a-row-b? (car lat) (cdr lat)))))))
 
+; What difference does it make whether you put the lambda at the top
+; or in the value section of the letrec?  Seems like no real difference
+; to me, W? aka two-in-a-row-b? is already hidden/protected
 (define two-in-a-row-final?
   (lambda (lat)
-    (cond
-      ((null? lat) #f)
-      (else (two-in-a-row-b? (car lat) (cdr lat))))))
+    (letrec
+      ((W? (lambda (preceding lat)
+        (cond
+          ((null? lat) #f)
+          (else (or (eq? (car lat) preceding)
+                    (W? (car lat) (cdr lat))))))))
+      (cond
+        ((null? lat) #f)
+        (else (W? (car lat) (cdr lat)))))))
 
 
 ; sum is sum of numbers seen so far, they name it sonssf...
@@ -117,13 +126,56 @@
 
 (define multirember-f
   (lambda (test?)
-    (lambda (a lat)
-      (cond
-        ((null? lat) '())
-        ((test? (car lat) a)
-         ((multirember-f test?) a (cdr lat)))
-        (else (cons (car lat)
-                    ((multirember-f test?) a (cdr lat))))))))
+    (letrec
+      ((m-f
+        (lambda (a lat)
+          (cond
+            ((null? lat) '())
+            ((test? (car lat) a)
+             (m-f a (cdr lat)))
+            (else (cons (car lat)
+                        (m-f a (cdr lat))))))))
+      m-f)))
+
+
+
+(define member?
+  (lambda (a lat)
+    (letrec
+      ((yes? (lambda (l)
+               (cond
+                 ((null? l) #f)
+                 ((eq? (car l) a) #t)
+                 (else (yes? (cdr l)))))))
+      (yes? lat))))
+
+
+(define union
+  (lambda (s1 s2)
+    (cond
+      ((null? s1) s2)
+      ((member? (car s1) s2) (union (cdr s1) s2))
+      (else (cons (car s1) (union (cdr s1) s2))))))
+
+(define union
+  (lambda (set1 set2)
+    (letrec
+      ((U (lambda (set)
+            (cond
+              ((null? set) set2)
+              ((member? (car set) set2) (U (cdr set)))
+              (else (cons (car set) (U (cdr set)))))))
+       (M?
+         (lambda (a lat)
+           (letrec
+             ((N? (lambda (lat)
+               (cond
+                 ((null? lat) #f)
+                 ((eq? (car lat) a) #t)
+                 (else (N? a (cdr lat)))))))
+             (N? lat)))))
+      (U set1))))
+
 
 
 

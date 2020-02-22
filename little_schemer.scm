@@ -535,7 +535,7 @@
 ; what I came up with
 (define union
   (lambda (s1 s2)
-    (cond 
+    (cond
       ((null? s1) s2)
       ((null? s2) s1)
       (else (cons (car s1) (union (cdr s1) (rember (car s1) s2)))))))
@@ -546,7 +546,7 @@
     (cond
       ((null? s1) s2)
       ((member? (car s1) s2) (union (cdr s1) s2))
-      (else (cons (car s1) (union (cdr s1) (multirember (car s1) s2)))))))
+      (else (cons (car s1) (union (cdr s1) s2))))))
 
 
 (define difference
