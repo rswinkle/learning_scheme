@@ -82,7 +82,13 @@
 
 (define sum-of-prefixes
   (lambda (tup)
-    (sum-of-prefixes-b 0 tup)))
+    (letrec
+      ((S (lambda (sum, tup)
+            (cond
+              ((null? tup) '())
+              (else (cons (+ sum (car tup))
+                          (S (+ sum (car tup)) (cdr tup))))))))
+    (S 0 tup))))
 
 
 
@@ -105,7 +111,14 @@
 
 (define scramble
   (lambda (tup)
-    (scramble-b tup '())))
+    (letrec
+      ((P (lambda (tup rev-pre)
+            (cond
+              ((null? tup) '())
+              (else
+                (cons (pick (car tup) (cons (car tup) rev-pre))
+                      (P (cdr tup) (cons (car tup) rev-pre))))))))
+    (P tup '()))))
 
 
 
