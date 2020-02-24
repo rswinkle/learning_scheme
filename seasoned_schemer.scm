@@ -285,19 +285,20 @@
 
 
 ; (let () a...b) same as (begin a...b)
-(define lm
-  (lambda (l out)
-    (cond
-      ((null? l) '())
-      ((atom? (car l)) ((out (car l))))
-      (else
-        (let ()
-          (lm (car l) out)
-          (lm (cdr l) out))))))
 
 (define leftmost
   (lambda (l)
-    (let/cc skip (lm l skip))))
+    (let/cc skip
+      (letrec
+        ((lm (lambda (l)
+               (cond
+                 ((null? l) '())
+                 ((atom? (car l)) ((skip (car l))))
+                 (else
+                   (let ()
+                     (lm (car l))
+                     (lm (cdr l))))))))
+      (lm l)))))
 
 
 (define eqan?
