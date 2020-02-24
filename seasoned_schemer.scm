@@ -192,4 +192,34 @@
 
 
 
+; Chapter 13
+
+
+(define intersect
+  (lambda (set1 set2)
+    (letrec
+      ((I (lambda (set)
+        (cond
+          ((null? set) '())
+          ((member? (car set) set2)
+           (cons (car set) (intersect (cdr set) set2)))
+          (else (intersect (cdr set) set2))))))
+      (I set1))))
+
+
+(define intersectall
+  (lambda (lset)
+    (letrec
+      ((intersectall
+         (lambda (lset)
+          (cond
+            ((null? (cdr lset)) (car lset))
+            (else (intersect (car lset) (intersectall (cdr lset))))))))
+      (cond
+        ((null? lset) '())
+        (else (intersectall lset))))))
+
+
+
+
 
