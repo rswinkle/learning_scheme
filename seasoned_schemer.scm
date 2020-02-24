@@ -198,26 +198,49 @@
 (define intersect
   (lambda (set1 set2)
     (letrec
-      ((I (lambda (set)
+      ((intersect-b (lambda (set)
         (cond
           ((null? set) '())
           ((member? (car set) set2)
-           (cons (car set) (intersect (cdr set) set2)))
-          (else (intersect (cdr set) set2))))))
-      (I set1))))
+           (cons (car set) (intersect-b (cdr set))))
+          (else (intersect-b (cdr set)))))))
+      (cond
+        ((null? set2) '())
+        (else (intersect-b set1))))))
 
+
+
+; racket has
+; call-with-current-continuation (call/cc is an alias)
+;
+; let/cc is simpler wrapper like the book's letcc
+; (let/cc k body ...) is equivalent to (call/cc (lambda (k) body ...)
 
 (define intersectall
   (lambda (lset)
-    (letrec
-      ((intersectall
-         (lambda (lset)
-          (cond
-            ((null? (cdr lset)) (car lset))
-            (else (intersect (car lset) (intersectall (cdr lset))))))))
-      (cond
-        ((null? lset) '())
-        (else (intersectall lset))))))
+    (let/cc hop
+      (letrec
+        ((intersectall-b
+           (lambda (lset)
+            (cond
+              ((null? (car lset)) (hop '()))
+              ((null? (cdr lset)) (car lset))
+              (else (intersect (car lset) (intersectall-b (cdr lset)))))))
+         (intersect
+           (lambda (set1 set2)
+            (letrec
+              ((I (lambda (set)
+                (cond
+                  ((null? set) '())
+                  ((member? (car set) set2)
+                   (cons (car set) (I (cdr set))))
+                  (else (I (cdr set)))))))
+              (cond
+                ((null? set2) (hop '()))
+                (else (I set1)))))))
+        (cond
+          ((null? lset) '())
+          (else (intersectall-b lset)))))))
 
 
 
