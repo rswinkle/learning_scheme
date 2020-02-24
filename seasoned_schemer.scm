@@ -116,8 +116,9 @@
             (cond
               ((null? tup) '())
               (else
-                (cons (pick (car tup) (cons (car tup) rev-pre))
-                      (P (cdr tup) (cons (car tup) rev-pre))))))))
+                (let ((rp (cons (car tup) rev-pre)))
+                  (cons (pick (car tup) rp)
+                        (P (cdr tup) rp))))))))
     (P tup '()))))
 
 
@@ -274,4 +275,79 @@
                 ((null? lat) '())
                 ((eq? (car lat) a) (skip (R (cdr lat))))
                 (else (cons (car lat) (R (cdr lat))))))))
-        (R lat))))
+        (R lat)))))
+
+
+; Chapter 14
+
+; (let ((x1 a1) ... (xn an)) B) is shortcut for
+; ((lambda (x1 ... xn) B) a1...an)
+
+(define leftmost
+  (lambda (l)
+    (cond
+      ((null? l) '())
+      ((atom? (car l)) (car l))
+      (else
+        (let ((a (leftmost (car l))))
+          (cond
+            ((atom? a) a)
+            (else (leftmost (cdr l)))))))))
+
+
+(define eqan?
+  (lambda (a b)
+    (cond
+      ((and (number? a) (number? b)) (= a b))
+      ((or (number? a) (number? b)) #f)
+      (else (eq? a b)))))
+
+
+; Is eqan? really necessary?
+; eq? seems to work fine for numbers and other atoms
+(define eqlist?
+  (lambda (l1 l2)
+    (cond
+      ((null? l1) (null? l2))
+      ((null? l2) #f)
+      ((atom? (car l1))
+       (and (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2))))
+      ((atom? (car l2)) #f)
+      (else (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))
+
+
+
+(define rember1*
+  (lambda (a l)
+    (letrec
+      ((R (lambda (l)
+            (cond
+              ((null? l) '())
+              ((atom? (car l))
+               (cond
+                 ((eq? (car l) a) (cdr l))
+                 (else (cons (car l) (R (cdr l))))))
+              (else
+                (let ((av (R (car l))))
+                  (cond
+                    ((eqlist? (car l) av)
+                     (cons (car l) (R (cdr l))))
+                    (else (cons av (cdr l))))))))))
+      (R l))))
+
+
+(define depth*
+  (lambda (l)
+    (cond
+      ((null? l) 1)
+      ((atom? (car l)) (depth* (cdr l)))
+      (else (max
+              (add1 (depth* (car l)))
+              (depth* (cdr l)))))))
+
+
+
+
+
+
+
