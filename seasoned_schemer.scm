@@ -283,16 +283,21 @@
 ; (let ((x1 a1) ... (xn an)) B) is shortcut for
 ; ((lambda (x1 ... xn) B) a1...an)
 
-(define leftmost
-  (lambda (l)
+
+; (let () a...b) same as (begin a...b)
+(define lm
+  (lambda (l out)
     (cond
       ((null? l) '())
-      ((atom? (car l)) (car l))
+      ((atom? (car l)) ((out (car l))))
       (else
-        (let ((a (leftmost (car l))))
-          (cond
-            ((atom? a) a)
-            (else (leftmost (cdr l)))))))))
+        (let ()
+          (lm (car l) out)
+          (lm (cdr l) out))))))
+
+(define leftmost
+  (lambda (l)
+    (let/cc skip (lm l skip))))
 
 
 (define eqan?
