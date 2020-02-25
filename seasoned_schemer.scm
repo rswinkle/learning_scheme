@@ -397,7 +397,109 @@
 
 
 
+; Chapter 15
+
+(define x (cons 'chicago (cons 'pizza '())))
+
+(set! x 'gone)
+
+(define gourmet
+  (lambda (food)
+    (cons food (cons x '()))))
+
+(define gourmand
+  (lambda (food)
+    (set! x food)
+    (cons food (cons x '()))))
 
 
+(define dinerR
+  (lambda (food)
+    (set! x food)
+    (cons 'milkshake (cons food '()))))
+
+
+(define omnivore
+  (let ((x 'minestrone))
+    (lambda (food)
+      (set! x food)
+      (cons food (cons x '())))))
+
+(define gobbler
+  (let ((x 'minestrone))
+    (lambda (food)
+      (set! x food)
+      (cons food (cons x '())))))
+
+(define food 'none)
+
+(define glutton
+  (lambda (x)
+    (set! food x)
+    (cons 'more (cons x (cons 'more (cons x '()))))))
+
+(define chez-nous
+  (lambda ()
+    (let ((a food))
+      (set! food x)
+      (set! x a))))
+
+(define sweet-tooth
+  (lambda (food)
+    (cons food (cons 'cake '()))))
+
+(define last 'angelfood)
+
+(define sweet-toothL
+  (lambda (food)
+    (set! last food)
+    (cons food (cons 'cake '()))))
+
+(define ingredients '())
+
+(define sweet-toothR
+  (lambda (food)
+    (set! ingredients (cons food ingredients))
+    (cons food (cons 'cake '()))))
+
+
+(define deep
+  (lambda (m)
+    (cond
+      ((zero? m) 'pizza)
+      (else (cons (deepM (sub1 m)) '())))))
+
+(define Rs '())
+(define Ns '())
+
+(define deepR
+  (lambda (n)
+    (let ((result (deep n)))
+    (set! Rs (cons result Rs))
+    (set! Ns (cons n Ns))
+    result)))
+
+(define find
+  (lambda (n Ns Rs)
+    (letrec
+      ((A (lambda (ns rs)
+          (cond
+            ((null? ns) #f)
+            ((= (car ns) n) (car rs))
+            (else
+              (A (cdr ns) (cdr rs)))))))
+      (A Ns Rs))))
+
+
+(define deepM
+  (let ((Rs '()) (Ns '()))
+    (lambda (n)
+      (let ((exists (find n Ns Rs)))
+        (if (atom? exists)
+            (let ((result (deep n)))
+              (set! Rs (cons result Rs))
+              (set! Ns (cons n Ns))
+              result)
+            exists)))))
 
 
