@@ -444,6 +444,9 @@
       (set! food x)
       (set! x a))))
 
+
+; Chapter 16
+
 (define sweet-tooth
   (lambda (food)
     (cons food (cons 'cake '()))))
@@ -491,6 +494,8 @@
       (A Ns Rs))))
 
 
+
+
 (define deepM
   (let ((Rs '()) (Ns '()))
     (lambda (n)
@@ -502,4 +507,20 @@
               result)
             exists)))))
 
+
+;(define length
+;  (lambda (l)
+;    (cond
+;      ((null? l) 0)
+;      (else (add1 (length (cdr l)))))))
+
+
+(define len
+  (let ((h (lambda (l) 0)))
+    (set! h
+      (lambda (arg)
+        (cond
+          ((null? arg) 0)
+          (else (add1 (h (cdr arg)))))))
+    h))
 
