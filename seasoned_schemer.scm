@@ -1,5 +1,4 @@
 
-
 (define atom?
   (lambda (x)
     (and (not (pair? x)) (not (null? x)))))
@@ -342,6 +341,23 @@
       (R l))))
 
 
+
+; https://github.com/viswanathgs/The-Seasoned-Schemer
+;(define-syntax letcc
+;  (syntax-rules ()
+;    ((letcc var body ...)
+;     (call-with-current-continuation
+;       (lambda (var)  body ... )))))
+
+
+(define-syntax try
+  (syntax-rules ()
+    ((try var a . b)
+     (let/cc success
+       (let/cc var (success a)) . b))))
+
+
+
 (define rm
   (lambda (a l oh)
     (cond
@@ -351,18 +367,23 @@
            (cdr l)
            (cons (car l) (rm a (cdr l) oh))))
       (else
-        (let ((new-car (let/cc oh (rm a (car l) oh))))
-          (if (atom? new-car)
-              (cons (car l) (rm a (cdr l) oh))
-              (cons new-car (cdr l))))))))
+        (try oh2
+          (cons (rm a (car l) oh2) (cdr l))
+          (cons (car l) (rm a (cdr l) oh)))))))
 
 
+; (try x a B)
+
+; equivalent to
+
+; (let/cc success
+;   (let/cc x
+;     (success a))
+;    B)
+;
 (define rember1*
   (lambda (a l)
-    (let ((new-l (let/cc oh (rm a l oh))))
-      (if (atom? new-l)
-        l
-        new-l))))
+    (try oh (rm a l oh) l)))
 
 
 (define depth*
